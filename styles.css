@@ -2,6 +2,52 @@
    FUELING THE FUTURE — Design System v2
    Step 1: Foundation  |  Step 2: Global Nav Upgrade
    ============================================================ */
+/* --- Global Variables & Reset --- */
+:root {
+    --primary: #2e7d32;       /* Forest Green */
+    --primary-dark: #1b5e20;
+    --secondary: #e8f5e9;     /* Light Mint */
+    --accent: #fb8c00;        
+    --bg: #f5f5f5;
+    --card: #ffffff;
+    --text: #333333;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+ 
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    line-height: 1.6;
+    color: var(--text);
+    background-color: var(--bg);
+    margin: 0;
+    padding: 0;
+}
+
+/* --- Typography --- */
+h1, h2, h3 {
+    color: var(--primary);
+    margin-bottom: 1rem;
+}
+
+/* --- Layout Components --- */
+header {
+    background-color: var(--primary);
+    color: white;
+    padding: 2.5rem 1rem;
+    text-align: center;
+}
+
+header h1 {
+    color: white;
+    margin: 0;
+    font-size: 2.2rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
 
 /* --- FONTS (Bunny Fonts — GDPR-safe, zero Google) --- */
 @import url('https://fonts.bunny.net/css?family=syne:400,600,700,800|dm-sans:400,500,600|space-mono:400,700');
