@@ -1,32 +1,548 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Global Perspective</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Global Perspective — Fueling the Future</title>
+  <link rel="stylesheet" href="styles.css">
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=syne:400,600,700,800|dm-sans:400,500" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/topojson/3.0.2/topojson.min.js"></script>
+  <style>
+    :root {
+      --green:       #1a6b2e;
+      --green-mid:   #2e8b4a;
+      --green-light: #e6f4ea;
+      --green-glow:  rgba(46,139,74,0.18);
+      --amber:       #fb8c00;
+      --red:         #e63e11;
+      --bg:          #0b120d;
+      --surface:     #111a13;
+      --surface2:    #172019;
+      --border:      rgba(46,139,74,0.22);
+      --text:        #e8f0e9;
+      --text-muted:  #7a9c7e;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* NAV — see styles.css */
+    /* HERO */
+    .hero {
+      text-align: center; padding: 5rem 1rem 3rem; position: relative; overflow: hidden;
+    }
+    .hero-globe {
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 500px; height: 500px; border-radius: 50%;
+      background: radial-gradient(circle at 40% 35%, rgba(46,139,74,0.06) 0%, transparent 60%);
+      border: 1px solid rgba(46,139,74,0.07);
+      animation: slowSpin 40s linear infinite;
+      pointer-events: none;
+    }
+    .hero-globe::after {
+      content: ''; position: absolute; inset: 20px; border-radius: 50%;
+      border: 1px dashed rgba(46,139,74,0.1);
+    }
+    @keyframes slowSpin { to { transform: translate(-50%,-50%) rotate(360deg); } }
+    .hero-eyebrow {
+      font-size: 0.75rem; font-weight: 500; letter-spacing: 0.25em;
+      text-transform: uppercase; color: var(--green-mid); margin-bottom: 1rem;
+      opacity: 0; animation: fadeUp 0.6s 0.1s forwards;
+    }
+    .hero h1 {
+      font-family: 'Syne', sans-serif; font-size: clamp(2.8rem, 7vw, 5rem);
+      font-weight: 800; line-height: 1; letter-spacing: -3px;
+      opacity: 0; animation: fadeUp 0.7s 0.25s forwards;
+    }
+    .hero h1 span {
+      background: linear-gradient(135deg, #7ddc9a, var(--green-mid));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero p {
+      max-width: 560px; margin: 1.2rem auto 0; color: var(--text-muted); font-size: 1rem; line-height: 1.7;
+      opacity: 0; animation: fadeUp 0.7s 0.4s forwards;
+    }
+    @keyframes fadeUp {
+      from { opacity:0; transform: translateY(18px); }
+      to   { opacity:1; transform: translateY(0); }
+    }
+
+    /* LAYOUT */
+    .wrapper { max-width: 1020px; margin: 0 auto; padding: 0 1.5rem 6rem; }
+
+    /* STAT COUNTERS ROW */
+    .stats-row {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-bottom: 2.5rem;
+    }
+    .stat-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      padding: 1.4rem 1.5rem; position: relative; overflow: hidden;
+      opacity: 0; transform: translateY(20px); transition: opacity 0.5s, transform 0.5s, box-shadow 0.2s;
+    }
+    .stat-card.visible { opacity: 1; transform: translateY(0); }
+    .stat-card:hover { box-shadow: 0 16px 40px rgba(0,0,0,0.35), 0 0 0 1px var(--border); }
+    .stat-card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--green), #7ddc9a);
+    }
+    .stat-num {
+      font-family: 'Syne', sans-serif; font-size: 2.4rem; font-weight: 800;
+      letter-spacing: -2px; color: #7ddc9a; line-height: 1;
+    }
+    .stat-label { font-size: 0.8rem; color: var(--text-muted); margin-top: 6px; line-height: 1.4; }
+    .stat-source { font-size: 0.68rem; color: rgba(122,156,126,0.55); margin-top: 8px; }
+
+    /* MAP SECTION */
+    .map-section {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+      padding: 2rem; margin-bottom: 2.5rem; overflow: hidden;
+    }
+    .map-header { margin-bottom: 1.5rem; }
+    .map-header h2 {
+      font-family: 'Syne', sans-serif; font-size: 1.4rem; font-weight: 700; color: var(--text);
+    }
+    .map-header p { font-size: 0.85rem; color: var(--text-muted); margin-top: 4px; }
+
+    /* Legend */
+    .map-legend {
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin-bottom: 1rem;
+      font-size: 0.72rem; color: var(--text-muted);
+    }
+    .legend-bar {
+      display: flex; height: 10px; border-radius: 5px; overflow: hidden; width: 200px;
+    }
+    .legend-bar div { flex: 1; }
+
+    /* SVG Map */
+    #mapContainer { position: relative; width: 100%; }
+    #mapSvg { width: 100%; display: block; }
+    .country { stroke: rgba(11,18,13,0.6); stroke-width: 0.4px; cursor: pointer; transition: opacity 0.15s; }
+    .country:hover { opacity: 0.78; stroke: #7ddc9a; stroke-width: 1px; }
+
+    /* Tooltip */
+    #mapTooltip {
+      position: fixed; pointer-events: none; z-index: 999;
+      background: rgba(17,26,19,0.96); backdrop-filter: blur(12px);
+      border: 1px solid var(--border); border-radius: 10px;
+      padding: 10px 14px; font-size: 0.82rem;
+      opacity: 0; transform: translateY(4px); transition: opacity 0.15s, transform 0.15s;
+    }
+    #mapTooltip.visible { opacity: 1; transform: translateY(0); }
+    #mapTooltip .tt-country { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 0.9rem; color: var(--text); }
+    #mapTooltip .tt-val { color: #7ddc9a; font-weight: 600; margin-top: 2px; }
+    #mapTooltip .tt-desc { color: var(--text-muted); font-size: 0.75rem; margin-top: 2px; }
+
+    /* No-data label */
+    .map-no-data { fill: #1d2e1f; }
+
+    /* DOUBLE BURDEN SECTION */
+    .double-burden {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; margin-bottom: 2.5rem;
+    }
+    .burden-card {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 16px;
+      padding: 1.6rem; opacity: 0; transform: translateY(20px);
+      transition: opacity 0.5s, transform 0.5s, box-shadow 0.2s;
+    }
+    .burden-card.visible { opacity: 1; transform: translateY(0); }
+    .burden-card:hover { box-shadow: 0 16px 40px rgba(0,0,0,0.35); }
+    .burden-icon { font-size: 1.6rem; margin-bottom: 0.75rem; }
+    .burden-card h3 {
+      font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
+      color: var(--text); margin-bottom: 0.6rem;
+    }
+    .burden-card p { font-size: 0.875rem; color: var(--text-muted); line-height: 1.65; }
+
+    /* REGION BAR CHART */
+    .region-section {
+      background: var(--surface); border: 1px solid var(--border); border-radius: 20px;
+      padding: 2rem; margin-bottom: 2.5rem;
+    }
+    .region-section h2 {
+      font-family: 'Syne', sans-serif; font-size: 1.3rem; font-weight: 700;
+      color: var(--text); margin-bottom: 0.4rem;
+    }
+    .region-section p { font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem; }
+    .region-bar-row {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 10px;
+    }
+    .region-name { font-size: 0.78rem; color: var(--text-muted); width: 130px; flex-shrink: 0; text-align: right; }
+    .region-track { flex: 1; background: var(--surface2); border-radius: 6px; height: 24px; overflow: hidden; }
+    .region-fill {
+      height: 100%; border-radius: 6px; width: 0%;
+      transition: width 1.2s cubic-bezier(0.34,1.2,0.64,1);
+      display: flex; align-items: center; justify-content: flex-end; padding-right: 8px;
+    }
+    .region-pct { font-size: 0.72rem; font-weight: 700; color: rgba(0,0,0,0.6); }
+
+    /* CALLOUT BOX */
+    .callout {
+      background: linear-gradient(135deg, rgba(46,139,74,0.12), rgba(26,107,46,0.06));
+      border: 1px solid rgba(46,139,74,0.3);
+      border-radius: 14px; padding: 1.4rem 1.6rem; margin-bottom: 2.5rem;
+      font-size: 0.9rem; line-height: 1.7; color: var(--text-muted);
+    }
+    .callout strong { color: #7ddc9a; }
+
+    footer {
+      text-align: center; padding: 3rem 1rem;
+      color: var(--text-muted); font-size: 0.8rem;
+      border-top: 1px solid var(--border);
+    }
+
+    @media (max-width: 640px) {
+      .stats-row { grid-template-columns: 1fr; }
+      .double-burden { grid-template-columns: 1fr; }
+      .region-name { width: 90px; font-size: 0.7rem; }
+    }
+  </style>
 </head>
 <body>
-    <header><h1>A Global Epidemic</h1></header>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="health.html">Physical Health</a>
-        <a href="wellbeing.html">Mental & Academic</a>
-        <a href="global.html">Global Context</a>
-        <a href="solutions.html">Solutions</a>
-        <a href="analysis.html">NutriMatch</a>
-    </nav>
 
-    <main class="container">
-        <img src="https://images.unsplash.com/photo-1529107386315-e1a2ed48a620?q=80&w=800" alt="Global Food" class="hero-img">
-        <h2>Beyond Borders</h2>
-        <p>The rise of lifestyle diseases is no longer restricted to wealthy nations. As global food chains expand, developing countries are seeing a "double burden" of malnutrition and obesity.</p>
-        
-        <div class="stats-box">
-            <p><strong>World Health Organization (WHO):</strong> Globally, the number of overweight or obese children under the age of 5 was estimated to be over 39 million in recent years.</p>
-        </div>
+<div id="mapTooltip">
+  <div class="tt-country" id="ttCountry"></div>
+  <div class="tt-val" id="ttVal"></div>
+  <div class="tt-desc" id="ttDesc"></div>
+</div>
 
-        <p>In developing nations, processed foods are often cheaper than fresh produce, leading to a rapid rise in diabetes in regions that previously struggled primarily with undernutrition.</p>
-    </main>
-    <footer><p>&copy; 2026 Student Health Initiative</p></footer>
+<nav>
+  <a href="index.html">Home</a>
+  <a href="health.html">Physical Health</a>
+  <a href="wellbeing.html">Mental &amp; Academic</a>
+  <a href="global.html" class="active">Global Context</a>
+  <a href="solutions.html">Solutions</a>
+  <a href="analysis.html">NutriMatch</a>
+  <div id="scrollProgress"></div>
+</nav>
+
+<div class="hero">
+  <div class="hero-globe"></div>
+  <div class="hero-eyebrow">WHO Global Data</div>
+  <h1>A <span>Global</span> Epidemic</h1>
+  <p>Junk food and lifestyle diseases have crossed every border. The crisis is no longer confined to wealthy nations — it is reshaping health outcomes worldwide.</p>
+</div>
+
+<div class="wrapper">
+
+  <!-- STAT CARDS -->
+  <div class="stats-row">
+    <div class="stat-card" data-delay="0">
+      <div class="stat-num" data-count="39" data-suffix="M+">0</div>
+      <div class="stat-label">Overweight or obese children under age 5 globally</div>
+      <div class="stat-source">Source: World Health Organization</div>
+    </div>
+    <div class="stat-card" data-delay="120">
+      <div class="stat-num" data-count="650" data-suffix="M+">0</div>
+      <div class="stat-label">Adults worldwide living with obesity</div>
+      <div class="stat-source">Source: WHO Global Health Observatory</div>
+    </div>
+    <div class="stat-card" data-delay="240">
+      <div class="stat-num" data-count="3" data-suffix="×">0</div>
+      <div class="stat-label">Rate at which global obesity has tripled since 1975</div>
+      <div class="stat-source">Source: WHO Factsheet 2024</div>
+    </div>
+  </div>
+
+  <!-- MAP -->
+  <div class="map-section">
+    <div class="map-header">
+      <h2>Childhood Obesity Rates by Country</h2>
+      <p>Percentage of children (ages 5–19) with overweight or obesity. Hover any country for details.</p>
+    </div>
+    <div class="map-legend">
+      <span>Low</span>
+      <div class="legend-bar" id="legendBar"></div>
+      <span>High</span>
+      <span style="margin-left:12px; color:rgba(122,156,126,0.4)">— No data</span>
+    </div>
+    <div id="mapContainer">
+      <svg id="mapSvg" viewBox="0 0 960 500"></svg>
+    </div>
+  </div>
+
+  <!-- DOUBLE BURDEN CARDS -->
+  <div class="double-burden">
+    <div class="burden-card" data-delay="0">
+      <div class="burden-icon">⚖️</div>
+      <h3>The Double Burden</h3>
+      <p>Developing nations face a cruel paradox — traditional undernutrition persists in rural areas, while urban populations adopt processed-food diets, driving obesity and diabetes simultaneously in the same country.</p>
+    </div>
+    <div class="burden-card" data-delay="150">
+      <div class="burden-icon">🏪</div>
+      <h3>The Price Trap</h3>
+      <p>In low-income regions, ultra-processed foods often cost a fraction of fresh produce. A bag of chips can cost less than a single apple. Economic pressure, not just preference, drives families toward junk food.</p>
+    </div>
+    <div class="burden-card" data-delay="300">
+      <div class="burden-icon">🌐</div>
+      <h3>Global Food Chains</h3>
+      <p>Multinational fast-food and snack brands have expanded aggressively into Southeast Asia, Latin America, and Sub-Saharan Africa — markets where nutritional regulation is still catching up to the supply.</p>
+    </div>
+    <div class="burden-card" data-delay="450">
+      <div class="burden-icon">📈</div>
+      <h3>Rising Diabetes</h3>
+      <p>Type 2 diabetes — once an adult lifestyle disease — is now diagnosed in children across every continent. Frequent sugar spikes from processed foods are driving insulin resistance in younger and younger populations.</p>
+    </div>
+  </div>
+
+  <!-- REGIONAL BAR CHART -->
+  <div class="region-section">
+    <h2>Obesity Prevalence by WHO Region</h2>
+    <p>Adult obesity rate (%) — most recent available data per region.</p>
+    <div id="regionBars"></div>
+  </div>
+
+  <!-- CALLOUT -->
+  <div class="callout">
+    <strong>The WHO warns:</strong> If current trends continue, by 2035 more than half the world's population will be overweight or obese. The window to act — through policy, education, and food system reform — is narrowing every year.
+  </div>
+
+</div>
+
+<footer>
+  <p>&copy; 2026 Student Health Initiative &nbsp;·&nbsp; Data sourced from WHO Global Health Observatory</p>
+</footer>
+
+<script>
+// ── SCROLL PROGRESS ───────────────────────────────────────────
+window.addEventListener('scroll', () => {
+  const h = document.documentElement;
+  document.getElementById('scrollProgress').style.width =
+    (h.scrollTop / (h.scrollHeight - h.clientHeight) * 100) + '%';
+});
+
+// ── COUNTER ANIMATION ─────────────────────────────────────────
+function animateCount(el, target, suffix) {
+  const duration = 1400;
+  const start = performance.now();
+  function step(now) {
+    const t = Math.min((now - start) / duration, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    const val = Math.round(ease * target);
+    el.textContent = val + suffix;
+    if (t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+// ── INTERSECTION OBSERVER ─────────────────────────────────────
+const io = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const el = e.target;
+    const delay = parseInt(el.dataset.delay || 0);
+    setTimeout(() => {
+      el.classList.add('visible');
+      // trigger counter if stat-card
+      const numEl = el.querySelector('[data-count]');
+      if (numEl) {
+        animateCount(numEl, parseInt(numEl.dataset.count), numEl.dataset.suffix || '');
+      }
+      // trigger bar if region bar
+      const fill = el.querySelector('.region-fill');
+      if (fill) fill.style.width = fill.dataset.pct + '%';
+    }, delay);
+    io.unobserve(el);
+  });
+}, { threshold: 0.15 });
+
+document.querySelectorAll('.stat-card, .burden-card').forEach(el => io.observe(el));
+
+// ── REGIONAL BARS ─────────────────────────────────────────────
+const regions = [
+  { name: 'Americas',          pct: 28.6, color: '#e63e11' },
+  { name: 'Europe',            pct: 23.3, color: '#ee8100' },
+  { name: 'Eastern Mediterranean', pct: 20.7, color: '#fecb02' },
+  { name: 'Western Pacific',   pct: 13.5, color: '#85bb2f' },
+  { name: 'South-East Asia',   pct: 7.2,  color: '#2e8b4a' },
+  { name: 'Africa',            pct: 11.0, color: '#7ddc9a' },
+];
+const barsContainer = document.getElementById('regionBars');
+regions.forEach(r => {
+  const row = document.createElement('div');
+  row.className = 'region-bar-row';
+  row.innerHTML = `
+    <div class="region-name">${r.name}</div>
+    <div class="region-track">
+      <div class="region-fill" data-pct="${r.pct}" style="background:${r.color}; width:0%;">
+        <span class="region-pct">${r.pct}%</span>
+      </div>
+    </div>`;
+  barsContainer.appendChild(row);
+  // observe each row
+  row.style.opacity = '0';
+  row.style.transform = 'translateX(-10px)';
+  row.style.transition = 'opacity 0.5s, transform 0.5s';
+  io.observe(row);
+  row.addEventListener('transitionend', () => {}, {once:true});
+});
+
+// patch observer to also handle bar rows
+const io2 = new IntersectionObserver(entries => {
+  entries.forEach(e => {
+    if (!e.isIntersecting) return;
+    const el = e.target;
+    el.style.opacity = '1';
+    el.style.transform = 'translateX(0)';
+    const fill = el.querySelector('.region-fill');
+    if (fill) setTimeout(() => { fill.style.width = fill.dataset.pct + '%'; }, 200);
+    io2.unobserve(el);
+  });
+}, { threshold: 0.1 });
+document.querySelectorAll('.region-bar-row').forEach(el => io2.observe(el));
+
+// ── OBESITY DATA (% children 5-19 overweight/obese, approx WHO) ──
+const obesityData = {
+  "United States of America": 41.0,
+  "Mexico":      39.2, "Canada":       29.4, "Brazil":       29.8,
+  "Argentina":   28.1, "Chile":        31.2, "Colombia":     21.4,
+  "United Kingdom": 29.3, "Germany":  25.4, "France":       22.1,
+  "Italy":       36.0, "Spain":        34.6, "Poland":       27.0,
+  "Russia":      24.8, "Turkey":       30.6, "Ukraine":      19.2,
+  "China":       19.0, "Japan":        10.2, "South Korea":  13.4,
+  "India":        8.4, "Indonesia":    10.3, "Philippines":  11.2,
+  "Vietnam":      9.1, "Thailand":     15.8, "Malaysia":     22.4,
+  "Australia":   30.5, "New Zealand":  30.0, "Pakistan":     10.5,
+  "Bangladesh":   5.8, "Nigeria":       9.6, "South Africa": 20.4,
+  "Egypt":       34.5, "Saudi Arabia": 39.8, "Iran":         28.3,
+  "Iraq":        33.2, "Israel":       27.4,
+  "Ghana":        7.2, "Kenya":         8.1, "Ethiopia":      4.2,
+  "Tanzania":     5.3, "Mozambique":   4.8, "Zambia":        6.0,
+  "Peru":        24.7, "Venezuela":    26.3, "Ecuador":      26.0,
+  "Bolivia":     18.1, "Paraguay":     27.4, "Uruguay":      30.1,
+  "Sweden":      20.8, "Norway":       21.3, "Denmark":      19.7,
+  "Finland":     22.1, "Netherlands":  19.6, "Belgium":      21.9,
+  "Switzerland": 18.4, "Austria":      22.0, "Portugal":     33.1,
+  "Greece":      38.0, "Romania":      25.1, "Hungary":      26.4,
+  "Czech Republic":24.5, "Slovakia":  24.0, "Bulgaria":     27.8,
+  "Croatia":     24.2, "Serbia":       24.6, "Algeria":      20.4,
+  "Morocco":     22.0, "Libya":        31.2, "Sudan":        12.4,
+  "Kazakhstan":  21.6, "Uzbekistan":  12.8, "Myanmar":       7.2,
+  "Cambodia":     8.1, "Nepal":        6.4, "Sri Lanka":    15.2,
+  "Afghanistan":  7.8, "Yemen":       16.3, "Syria":        25.6,
+  "Jordan":      35.9, "Lebanon":     34.2, "Kuwait":       45.8,
+  "United Arab Emirates": 38.4, "Qatar": 44.1,
+};
+
+// colour scale: light-yellow → deep-red
+const colorScale = d3.scaleThreshold()
+  .domain([5, 10, 15, 20, 25, 30, 35, 42])
+  .range(['#264d2e','#2e7d32','#66bb6a','#fdd835','#fb8c00','#e53935','#b71c1c','#4a0000','#1a0000']);
+
+// Build legend
+const legendBar = document.getElementById('legendBar');
+colorScale.range().forEach(c => {
+  const d = document.createElement('div');
+  d.style.background = c;
+  legendBar.appendChild(d);
+});
+
+// ── D3 MAP ────────────────────────────────────────────────────
+const svg = d3.select('#mapSvg');
+const projection = d3.geoNaturalEarth1()
+  .scale(153)
+  .translate([480, 265]);
+const path = d3.geoPath().projection(projection);
+const tooltip = document.getElementById('mapTooltip');
+
+fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
+  .then(r => r.json())
+  .then(world => {
+    const countries = topojson.feature(world, world.objects.countries);
+    // Country id → name lookup via a minimal embedded map
+    const idToName = getIdToName();
+
+    svg.selectAll('.country')
+      .data(countries.features)
+      .enter().append('path')
+      .attr('class', 'country')
+      .attr('d', path)
+      .attr('fill', d => {
+        const name = idToName[d.id] || '';
+        const val  = obesityData[name];
+        return val != null ? colorScale(val) : '#1d2e1f';
+      })
+      .attr('opacity', 0)
+      .on('mousemove', function(event, d) {
+        const name = idToName[d.id] || '';
+        const val  = obesityData[name];
+        document.getElementById('ttCountry').textContent = name || 'Unknown territory';
+        if (val != null) {
+          document.getElementById('ttVal').textContent = val + '% childhood overweight/obesity';
+          document.getElementById('ttDesc').textContent = getRiskLabel(val);
+        } else {
+          document.getElementById('ttVal').textContent = 'No data available';
+          document.getElementById('ttDesc').textContent = '';
+        }
+        tooltip.style.left = (event.clientX + 14) + 'px';
+        tooltip.style.top  = (event.clientY - 10) + 'px';
+        tooltip.classList.add('visible');
+      })
+      .on('mouseleave', () => tooltip.classList.remove('visible'));
+
+    // Animate countries in staggered
+    svg.selectAll('.country')
+      .transition().duration(800)
+      .delay((d, i) => i * 1.2)
+      .attr('opacity', 1);
+
+    // Graticule
+    svg.insert('path', '.country')
+      .datum(d3.geoGraticule()())
+      .attr('fill', 'none')
+      .attr('stroke', 'rgba(46,139,74,0.08)')
+      .attr('stroke-width', 0.5)
+      .attr('d', path);
+
+    // Sphere outline
+    svg.insert('path', '.country')
+      .datum({type:'Sphere'})
+      .attr('fill', 'none')
+      .attr('stroke', 'rgba(46,139,74,0.15)')
+      .attr('stroke-width', 1)
+      .attr('d', path);
+  })
+  .catch(() => {
+    document.getElementById('mapContainer').innerHTML =
+      '<p style="text-align:center;color:var(--text-muted);padding:3rem">Map could not load — check your network connection.</p>';
+  });
+
+function getRiskLabel(val) {
+  if (val >= 35) return '🔴 Very high risk — urgent action needed';
+  if (val >= 25) return '🟠 High risk — significant concern';
+  if (val >= 15) return '🟡 Moderate risk — rising trend';
+  return '🟢 Lower risk — but monitoring required';
+}
+
+// Minimal ISO numeric → country name lookup (subset matching our data)
+function getIdToName() {
+  return {
+    840:"United States of America",484:"Mexico",124:"Canada",76:"Brazil",
+    32:"Argentina",152:"Chile",170:"Colombia",826:"United Kingdom",276:"Germany",
+    250:"France",380:"Italy",724:"Spain",616:"Poland",643:"Russia",792:"Turkey",
+    804:"Ukraine",156:"China",392:"Japan",410:"South Korea",356:"India",
+    360:"Indonesia",608:"Philippines",704:"Vietnam",764:"Thailand",458:"Malaysia",
+    36:"Australia",554:"New Zealand",586:"Pakistan",50:"Bangladesh",
+    566:"Nigeria",710:"South Africa",818:"Egypt",682:"Saudi Arabia",364:"Iran",
+    368:"Iraq",376:"Israel",288:"Ghana",404:"Kenya",231:"Ethiopia",
+    834:"Tanzania",508:"Mozambique",894:"Zambia",604:"Peru",862:"Venezuela",
+    218:"Ecuador",68:"Bolivia",600:"Paraguay",858:"Uruguay",752:"Sweden",
+    578:"Norway",208:"Denmark",246:"Finland",528:"Netherlands",56:"Belgium",
+    756:"Switzerland",40:"Austria",620:"Portugal",300:"Greece",642:"Romania",
+    348:"Hungary",203:"Czech Republic",703:"Slovakia",100:"Bulgaria",
+    191:"Croatia",688:"Serbia",12:"Algeria",504:"Morocco",434:"Libya",
+    729:"Sudan",398:"Kazakhstan",860:"Uzbekistan",104:"Myanmar",116:"Cambodia",
+    524:"Nepal",144:"Sri Lanka",4:"Afghanistan",887:"Yemen",760:"Syria",
+    400:"Jordan",422:"Lebanon",414:"Kuwait",784:"United Arab Emirates",634:"Qatar",
+  };
+}
+</script>
+  <script src="js/nav-upgrade.js"></script>
 </body>
 </html>
