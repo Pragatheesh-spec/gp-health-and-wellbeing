@@ -1,37 +1,145 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Physical Health Impact</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Physical Health Impact | Fueling the Future</title>
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=syne:400,600,700,800|dm-sans:400,500,600|space-mono:400,700" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles-3d.css">
 </head>
 <body>
-    <header><h1>Physical Health Consequences</h1></header>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="health.html">Physical Health</a>
-        <a href="wellbeing.html">Mental & Academic</a>
-        <a href="global.html">Global Context</a>
-        <a href="solutions.html">Solutions</a>
-        <a href="analysis.html">NutriMatch</a>
-    </nav>
 
-    <main class="container">
-        <img src="https://images.unsplash.com/photo-1498837167922-ddd27525d352?q=80&w=800" alt="Sugar and Health" class="hero-img">
-        <h2>How Junk Food Harms the Body</h2>
-        <p>Excessive junk food consumption introduces high levels of sodium, trans fats, and added sugars into a developing body. This leads to several chronic conditions traditionally only seen in adults.</p>
-        
-        <div class="stats-box">
-            <p><strong>Fast Fact:</strong> Children who consume fast food regularly ingest approximately 187 more calories per day than those who don't, leading to significant weight gain over time.</p>
+  <header>
+    <span class="header-eyebrow">Chapter 01 · Physical Health</span>
+    <h1>What Junk Food <em>Does</em></h1>
+    <p class="header-sub">How ultra-processed food rewires a developing body — from first bite to long-term disease.</p>
+  </header>
+
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="health.html">Physical Health</a>
+    <a href="wellbeing.html">Mental &amp; Academic</a>
+    <a href="global.html">Global Context</a>
+    <a href="solutions.html">Solutions</a>
+    <a href="analysis.html">NutriMatch</a>
+  </nav>
+
+  <main class="container card-3d">
+    <img
+      src="https://images.unsplash.com/photo-1498837167922-ddd27525d352?q=80&w=800"
+      alt="Sugar and processed food close-up"
+      class="hero-img reveal"
+      loading="lazy"
+    >
+
+    <h2 class="reveal">How Junk Food Harms the Body</h2>
+    <p class="reveal">Excessive junk food introduces high levels of sodium, trans fats, and added sugars into a developing body — creating systemic inflammation, metabolic dysfunction, and chronic conditions once seen only in adults, now appearing in children as young as eight.</p>
+
+    <div class="stats-box float-layer reveal">
+      <p><strong>Fast Fact:</strong> Children who consume fast food regularly ingest approximately 187 more calories per day than those who don't — leading to ~6 lbs of excess weight gain per year. (JAMA Pediatrics)</p>
+    </div>
+
+    <!-- Animated sugar molecule SVG -->
+    <div class="molecule-wrap">
+      <svg width="260" height="120" viewBox="0 0 260 120" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Sugar molecule diagram">
+        <!-- Bonds -->
+        <line x1="60" y1="60" x2="110" y2="30" stroke="rgba(46,139,74,0.4)" stroke-width="2"/>
+        <line x1="110" y1="30" x2="160" y2="60" stroke="rgba(46,139,74,0.4)" stroke-width="2"/>
+        <line x1="160" y1="60" x2="160" y2="90" stroke="rgba(46,139,74,0.4)" stroke-width="2"/>
+        <line x1="160" y1="90" x2="110" y2="90" stroke="rgba(46,139,74,0.4)" stroke-width="2"/>
+        <line x1="110" y1="90" x2="60"  y2="60" stroke="rgba(46,139,74,0.4)" stroke-width="2"/>
+        <line x1="110" y1="30" x2="110" y2="10" stroke="rgba(46,139,74,0.3)" stroke-width="1.5" stroke-dasharray="3 2"/>
+        <line x1="160" y1="60" x2="200" y2="50" stroke="rgba(46,139,74,0.3)" stroke-width="1.5" stroke-dasharray="3 2"/>
+
+        <!-- Atoms -->
+        <circle cx="60"  cy="60" r="10" fill="#172019" stroke="#2e8b4a" stroke-width="1.5">
+          <animate attributeName="r" values="10;12;10" dur="2.8s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="110" cy="30" r="10" fill="#172019" stroke="#7ddc9a" stroke-width="1.5">
+          <animate attributeName="r" values="10;12;10" dur="2.8s" begin="0.4s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="160" cy="60" r="10" fill="#172019" stroke="#2e8b4a" stroke-width="1.5">
+          <animate attributeName="r" values="10;12;10" dur="2.8s" begin="0.8s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="160" cy="90" r="10" fill="#172019" stroke="#fb8c00" stroke-width="1.5">
+          <animate attributeName="r" values="10;12;10" dur="2.8s" begin="1.2s" repeatCount="indefinite"/>
+        </circle>
+        <circle cx="110" cy="90" r="10" fill="#172019" stroke="#2e8b4a" stroke-width="1.5">
+          <animate attributeName="r" values="10;12;10" dur="2.8s" begin="1.6s" repeatCount="indefinite"/>
+        </circle>
+
+        <!-- Labels -->
+        <text x="53"  y="64" font-size="16" fill="#7a9c7e" font-family="Space Mono, monospace" text-anchor="middle">C</text>
+        <text x="110" y="34" font-size="16" fill="#7ddc9a" font-family="Space Mono, monospace" text-anchor="middle">O</text>
+        <text x="160" y="64" font-size="16" fill="#7a9c7e" font-family="Space Mono, monospace" text-anchor="middle">C</text>
+        <text x="160" y="94" font-size="16" fill="#fb8c00" font-family="Space Mono, monospace" text-anchor="middle">O</text>
+        <text x="110" y="94" font-size="16" fill="#7a9c7e" font-family="Space Mono, monospace" text-anchor="middle">C</text>
+
+        <!-- Label -->
+        <text x="220" y="65" font-size="9" fill="rgba(122,156,126,0.6)" font-family="DM Sans, sans-serif">C₆H₁₂O₆</text>
+        <!-- <text x="220" y="70" font-size="16" fill="rgba(122,156,126,0.8)" font-family="DM Sans, sans-serif">C₆H₁₂O₆</text>          -->
+        <text x="220" y="78" font-size="7.5" fill="rgba(122,156,126,0.4)" font-family="DM Sans, sans-serif">Glucose</text>
+      </svg>
+    </div>
+
+    <!-- Animated bar chart -->
+    <h3 class="reveal">Key Risk Indicators in Children</h3>
+    <p class="reveal">Data from WHO and CDC studies on children aged 6–17 with regular junk food consumption (3+ times/week).</p>
+
+    <div class="risk-chart">
+      <div class="risk-bar-item">
+        <div class="risk-bar-header">
+          <span class="risk-bar-label">Obesity & Overweight</span>
+          <span class="risk-bar-pct">41% of regular consumers</span>
         </div>
+        <div class="risk-bar-track">
+          <div class="risk-bar-fill color-obesity" data-width="82"></div>
+        </div>
+        <div class="risk-bar-note">vs. 18% in low-consumption peer group — a 2.3× higher rate</div>
+      </div>
 
-        <h3>Key Health Risks:</h3>
-        <ul>
-            <li><strong>Obesity:</strong> Excessive caloric intake without nutritional value.</li>
-            <li><strong>Type 2 Diabetes:</strong> Insulin resistance caused by frequent "sugar spikes."</li>
-            <li><strong>Hypertension:</strong> High sodium in processed snacks leads to early heart strain.</li>
-        </ul>
-    </main>
-    <footer><p>&copy; 2026 Student Health Initiative</p></footer>
+      <div class="risk-bar-item">
+        <div class="risk-bar-header">
+          <span class="risk-bar-label">Insulin Resistance / Pre-diabetes</span>
+          <span class="risk-bar-pct">28% elevated risk</span>
+        </div>
+        <div class="risk-bar-track">
+          <div class="risk-bar-fill color-diabetes" data-width="56"></div>
+        </div>
+        <div class="risk-bar-note">Fasting blood sugar elevated in 1 in 4 heavy fast-food consumers by age 14</div>
+      </div>
+
+      <div class="risk-bar-item">
+        <div class="risk-bar-header">
+          <span class="risk-bar-label">Hypertension (High Blood Pressure)</span>
+          <span class="risk-bar-pct">19% prevalence</span>
+        </div>
+        <div class="risk-bar-track">
+          <div class="risk-bar-fill color-hypertension" data-width="38"></div>
+        </div>
+        <div class="risk-bar-note">Ultra-processed snacks average 900 mg sodium per serving — nearly 40% of a child's daily limit</div>
+      </div>
+    </div>
+
+    <h3 class="reveal">The Compounding Effect</h3>
+    <p class="reveal">Each risk factor amplifies the others. Obesity worsens insulin resistance. Elevated blood sugar strains the cardiovascular system. Chronic low-grade inflammation suppresses the immune system, increasing illness and school absence. Every cascade begins with what's available in the cafeteria line.</p>
+
+    <ul class="reveal-group">
+      <li><strong>Obesity</strong> → worsens insulin resistance → accelerates type 2 diabetes onset</li>
+      <li><strong>High sodium</strong> → elevates blood pressure → early cardiovascular strain</li>
+      <li><strong>Trans fats</strong> → drive systemic inflammation → impair immune and cognitive function</li>
+      <li><strong>Sugar spikes</strong> → deplete energy rapidly → increase hunger and overconsumption</li>
+    </ul>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Student Health Initiative &nbsp;·&nbsp; Built for education, not profit</p>
+  </footer>
+
+  <script src="js/nav-upgrade.js"></script>
+  <script src="js/tilt.js"></script>
+  <script src="js/scroll-anim.js"></script>
 </body>
 </html>

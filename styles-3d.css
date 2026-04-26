@@ -1,0 +1,539 @@
+/* ============================================================
+   FUELING THE FUTURE — styles-3d.css
+   Step 3: 3D Card System  |  Step 4: Page-by-page animations
+   Step 5: Scroll reveals  |  Pure CSS + light JS hooks
+   ============================================================ */
+
+/* ============================================================
+   3D CARD BASE SYSTEM
+   ============================================================ */
+
+/* Wrap any .container or card in .card-3d for tilt effect */
+.card-3d {
+  transform-style: preserve-3d;
+  perspective: 1000px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  will-change: transform;
+}
+
+/* JS-driven tilt adds inline transform — fallback hover */
+.card-3d:hover {
+  box-shadow:
+    0 24px 64px rgba(0,0,0,0.55),
+    0 0 0 1px var(--border-strong),
+    0 0 80px rgba(46,139,74,0.08);
+}
+
+/* Stats-box / inner elements float above card surface */
+.card-3d .stats-box,
+.card-3d .float-layer {
+  transform: translateZ(20px);
+  transition: transform 0.15s ease;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.35);
+}
+
+/* ============================================================
+   SCROLL-REVEAL BASE  (applied by scroll-anim.js)
+   ============================================================ */
+
+/* Elements waiting to be revealed */
+.reveal {
+  opacity: 0;
+  transform: translateY(32px);
+  transition:
+    opacity 0.65s var(--ease-out),
+    transform 0.65s var(--ease-out);
+}
+
+.reveal.reveal-left {
+  transform: translateX(-32px);
+}
+
+.reveal.reveal-right {
+  transform: translateX(32px);
+}
+
+.reveal.reveal-scale {
+  transform: scale(0.94) translateY(20px);
+}
+
+/* Stagger children automatically */
+.reveal-group > * {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.55s var(--ease-out),
+    transform 0.55s var(--ease-out);
+}
+
+/* When parent is triggered, children animate with delays */
+.reveal-group.visible > *:nth-child(1) { transition-delay: 0.05s; }
+.reveal-group.visible > *:nth-child(2) { transition-delay: 0.13s; }
+.reveal-group.visible > *:nth-child(3) { transition-delay: 0.21s; }
+.reveal-group.visible > *:nth-child(4) { transition-delay: 0.29s; }
+.reveal-group.visible > *:nth-child(5) { transition-delay: 0.37s; }
+.reveal-group.visible > *:nth-child(6) { transition-delay: 0.45s; }
+
+.reveal.visible,
+.reveal-group.visible > * {
+  opacity: 1;
+  transform: none;
+}
+
+/* ============================================================
+   INDEX.HTML — Home Page Animations
+   ============================================================ */
+
+/* Hero word-by-word stagger */
+.hero-word {
+  display: inline-block;
+  opacity: 0;
+  transform: translateY(24px);
+  animation: wordSlideUp 0.6s var(--ease-spring) forwards;
+}
+
+.hero-word:nth-child(1) { animation-delay: 0.1s; }
+.hero-word:nth-child(2) { animation-delay: 0.22s; }
+.hero-word:nth-child(3) { animation-delay: 0.34s; }
+.hero-word:nth-child(4) { animation-delay: 0.46s; }
+
+@keyframes wordSlideUp {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Rotating globe decoration */
+.globe-bg {
+  position: absolute;
+  top: -80px;
+  right: -120px;
+  width: 480px;
+  height: 480px;
+  border-radius: 50%;
+  border: 1px solid rgba(46,139,74,0.08);
+  animation: globeSpin 25s linear infinite;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.globe-bg::before {
+  content: '';
+  position: absolute;
+  inset: 30px;
+  border-radius: 50%;
+  border: 1px dashed rgba(46,139,74,0.1);
+}
+
+.globe-bg::after {
+  content: '';
+  position: absolute;
+  top: 50%; left: 0; right: 0;
+  height: 1px;
+  background: rgba(46,139,74,0.12);
+  transform: rotate(-23.5deg); /* axial tilt */
+}
+
+@keyframes globeSpin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* Triple Threat cards — 3D fan stack */
+.triple-threat {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.25rem;
+  margin: 2rem 0;
+  perspective: 1200px;
+}
+
+.threat-card {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem 1.25rem;
+  position: relative;
+  opacity: 0;
+  transform: translateY(30px) rotateY(-8deg);
+  transition:
+    opacity 0.5s var(--ease-out),
+    transform 0.5s var(--ease-out),
+    box-shadow 0.25s ease;
+  transform-style: preserve-3d;
+  cursor: default;
+}
+
+.threat-card.visible {
+  opacity: 1;
+  transform: translateY(0) rotateY(0deg);
+}
+
+.threat-card:nth-child(1).visible { transition-delay: 0.05s; }
+.threat-card:nth-child(2).visible { transition-delay: 0.18s; }
+.threat-card:nth-child(3).visible { transition-delay: 0.31s; }
+
+.threat-card:hover {
+  transform: translateY(-6px) rotateY(-3deg) scale(1.02);
+  box-shadow: 0 24px 56px rgba(0,0,0,0.45), 0 0 0 1px var(--border-strong);
+  z-index: 2;
+}
+
+.threat-card .threat-icon {
+  font-size: 2rem;
+  margin-bottom: 0.75rem;
+  display: block;
+  filter: drop-shadow(0 4px 12px rgba(46,139,74,0.3));
+  transition: transform 0.3s var(--ease-spring);
+}
+
+.threat-card:hover .threat-icon {
+  transform: translateY(-4px) scale(1.1);
+}
+
+.threat-card h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 0.5rem;
+  letter-spacing: 0.01em;
+}
+
+.threat-card p {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* Top accent line per card */
+.threat-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  background: linear-gradient(90deg, var(--green-mid), transparent);
+  opacity: 0.6;
+}
+
+.threat-card:nth-child(2)::before {
+  background: linear-gradient(90deg, var(--amber), transparent);
+}
+
+.threat-card:nth-child(3)::before {
+  background: linear-gradient(90deg, var(--red), transparent);
+}
+
+/* ============================================================
+   HEALTH.HTML — Animated CSS Bar Chart
+   ============================================================ */
+
+.risk-chart {
+  margin: 2rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.risk-bar-item {
+  opacity: 0;
+  transform: translateX(-16px);
+  transition: opacity 0.5s var(--ease-out), transform 0.5s var(--ease-out);
+}
+
+.risk-bar-item.visible {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+.risk-bar-item:nth-child(1) { transition-delay: 0s; }
+.risk-bar-item:nth-child(2) { transition-delay: 0.12s; }
+.risk-bar-item:nth-child(3) { transition-delay: 0.24s; }
+
+.risk-bar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 6px;
+}
+
+.risk-bar-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.risk-bar-pct {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.risk-bar-track {
+  height: 10px;
+  background: var(--surface-2);
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.risk-bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  width: 0%;
+  transition: width 1.3s cubic-bezier(0.34, 1.2, 0.64, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+/* shimmer sweep on fill */
+.risk-bar-fill::after {
+  content: '';
+  position: absolute;
+  top: 0; bottom: 0;
+  left: -100%;
+  width: 60%;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.18), transparent);
+  animation: shimmerSweep 2.5s 1.4s infinite;
+}
+
+@keyframes shimmerSweep {
+  from { left: -60%; }
+  to   { left: 140%; }
+}
+
+.risk-bar-fill.color-obesity      { background: linear-gradient(90deg, #e63e11, #ff6b4a); }
+.risk-bar-fill.color-diabetes     { background: linear-gradient(90deg, #ee8100, #ffa640); }
+.risk-bar-fill.color-hypertension { background: linear-gradient(90deg, #fecb02, #ffe566); }
+
+.risk-bar-note {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin-top: 4px;
+  font-style: italic;
+}
+
+/* Sugar molecule SVG animation */
+.molecule-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+  opacity: 0;
+  transition: opacity 0.6s ease;
+}
+
+.molecule-wrap.visible { opacity: 1; }
+
+/* ============================================================
+   WELLBEING.HTML — Brain pulse + Mood wave
+   ============================================================ */
+
+/* Brain SVG container */
+.brain-visual {
+  display: flex;
+  justify-content: center;
+  margin: 2rem 0;
+  position: relative;
+}
+
+.brain-visual svg {
+  filter: drop-shadow(0 0 20px rgba(46,139,74,0.2));
+}
+
+/* Mood wave chart */
+.mood-chart {
+  margin: 2rem 0;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  overflow: hidden;
+}
+
+.mood-chart-title {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 1rem;
+}
+
+.mood-chart-legend {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+.legend-dot {
+  width: 10px;
+  height: 3px;
+  border-radius: 2px;
+}
+
+.mood-chart svg {
+  width: 100%;
+  overflow: visible;
+}
+
+/* ============================================================
+   SOLUTIONS.HTML — Flip Cards
+   ============================================================ */
+
+.solutions-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1.25rem;
+  margin: 2rem 0;
+  perspective: 1000px;
+}
+
+.flip-card {
+  height: 220px;
+  cursor: pointer;
+  opacity: 0;
+  transform: translateY(24px);
+  transition:
+    opacity 0.5s var(--ease-out),
+    transform 0.5s var(--ease-out);
+}
+
+.flip-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.flip-card:nth-child(1).visible { transition-delay: 0.05s; }
+.flip-card:nth-child(2).visible { transition-delay: 0.15s; }
+.flip-card:nth-child(3).visible { transition-delay: 0.25s; }
+.flip-card:nth-child(4).visible { transition-delay: 0.35s; }
+
+.flip-card-inner {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  transform-style: preserve-3d;
+  transition: transform 0.55s var(--ease-out);
+}
+
+.flip-card:hover .flip-card-inner,
+.flip-card.flipped .flip-card-inner {
+  transform: rotateY(180deg);
+}
+
+.flip-front,
+.flip-back {
+  position: absolute;
+  inset: 0;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  border-radius: var(--radius-md);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 1.75rem;
+  text-align: center;
+  border: 1px solid var(--border);
+}
+
+.flip-front {
+  background: var(--surface-1);
+}
+
+.flip-back {
+  background: var(--surface-2);
+  transform: rotateY(180deg);
+  border-color: var(--border-strong);
+}
+
+.flip-front::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  background: linear-gradient(90deg, var(--green-mid), transparent);
+}
+
+.flip-icon {
+  font-size: 2.2rem;
+  margin-bottom: 0.75rem;
+  display: block;
+  transition: transform 0.3s var(--ease-spring);
+}
+
+.flip-card:hover .flip-icon { transform: scale(1.15); }
+
+.flip-front h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+  margin: 0;
+}
+
+.flip-front .flip-hint {
+  font-size: 0.68rem;
+  color: var(--text-dim);
+  margin-top: 0.5rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-family: 'Space Mono', monospace;
+}
+
+.flip-back p {
+  font-size: 0.83rem;
+  color: var(--text-muted);
+  line-height: 1.65;
+  margin: 0;
+}
+
+.flip-back h4 {
+  font-family: 'Syne', sans-serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #7ddc9a;
+  margin-bottom: 0.6rem;
+}
+
+/* ============================================================
+   RESPONSIVE 3D ADJUSTMENTS
+   ============================================================ */
+
+@media (max-width: 768px) {
+  .triple-threat {
+    grid-template-columns: 1fr;
+  }
+
+  .solutions-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .flip-card {
+    height: 200px;
+  }
+
+  .globe-bg {
+    width: 280px;
+    height: 280px;
+    top: -40px;
+    right: -60px;
+  }
+}
+
+@media (max-width: 480px) {
+  .solutions-grid {
+    grid-template-columns: 1fr;
+  }
+}

@@ -1,35 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Well-being & Academic Performance</title>
-    <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mental &amp; Academic Wellbeing | Fueling the Future</title>
+  <link rel="preconnect" href="https://fonts.bunny.net">
+  <link href="https://fonts.bunny.net/css?family=syne:400,600,700,800|dm-sans:400,500,600|space-mono:400,700" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles-3d.css">
 </head>
 <body>
-    <header><h1>Mind & Performance</h1></header>
-    <nav>
-        <a href="index.html">Home</a>
-        <a href="health.html">Physical Health</a>
-        <a href="wellbeing.html">Mental & Academic</a>
-        <a href="global.html">Global Context</a>
-        <a href="solutions.html">Solutions</a>
-        <a href="analysis.html">NutriMatch</a>
-    </nav>
 
-    <main class="container">
-        <img src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=800" alt="Student studying" class="hero-img">
-        <h2>The Brain on Junk Food</h2>
-        <p>The brain requires high-quality fuel to function. Studies show that diets high in refined sugars can impair brain function and even worsen symptoms of mood disorders.</p>
-        
-        <h3>Academic Impacts</h3>
-        <p>Diets high in saturated fats can actually hamper the <strong>hippocampus</strong>, the part of the brain responsible for memory. Students often experience "brain fog" and decreased alertness after consuming high-sugar lunches.</p>
+  <header>
+    <span class="header-eyebrow">Chapter 02 · Mind &amp; Performance</span>
+    <h1>The Brain on <em>Junk Food</em></h1>
+    <p class="header-sub">Diet shapes cognition, mood, and academic performance in ways most students never suspect.</p>
+  </header>
 
-        <h3>Mental Health Links</h3>
-        <ul>
-            <li><strong>Anxiety:</strong> Caffeine and sugar crashes can mimic or worsen anxiety symptoms.</li>
-            <li><strong>Depression:</strong> Long-term poor nutrition is linked to higher risks of clinical depression in teenagers.</li>
-        </ul>
-    </main>
-    <footer><p>&copy; 2026 Student Health Initiative</p></footer>
+  <nav>
+    <a href="index.html">Home</a>
+    <a href="health.html">Physical Health</a>
+    <a href="wellbeing.html">Mental &amp; Academic</a>
+    <a href="global.html">Global Context</a>
+    <a href="solutions.html">Solutions</a>
+    <a href="analysis.html">NutriMatch</a>
+  </nav>
+
+  <main class="container card-3d">
+    <img
+      src="https://images.unsplash.com/photo-1434030216411-0b793f4b4173?q=80&w=800"
+      alt="Student studying at a desk"
+      class="hero-img reveal"
+      loading="lazy"
+    >
+
+    <h2 class="reveal">The Brain Requires Premium Fuel</h2>
+    <p class="reveal">The brain accounts for 2% of body weight but consumes 20% of daily energy. Its fuel quality matters enormously. Diets high in refined sugars don't just fail to nourish the brain — they actively disrupt it, impairing the same neural systems students rely on for focus, memory, and emotional regulation.</p>
+
+    <div class="stats-box float-layer reveal">
+      <p><strong>Research finding:</strong> A 2023 meta-analysis in <em>Nutritional Neuroscience</em> found that adolescents with the highest ultra-processed food intake scored 15–20% lower on standardised memory and attention tests than peers with whole-food diets.</p>
+    </div>
+
+    <!-- Animated brain SVG -->
+    <div class="brain-visual">
+      <svg width="320" height="200" viewBox="0 0 320 200" fill="none" xmlns="http://www.w3.org/2000/svg" aria-label="Brain diagram showing hippocampus">
+        <!-- Outer brain outline -->
+        <path d="M80 100 C75 60, 100 30, 140 28 C160 26, 175 35, 185 45
+                 C200 32, 225 28, 240 45 C258 40, 272 55, 268 80
+                 C278 90, 278 110, 268 125 C272 145, 258 162, 240 160
+                 C228 178, 205 182, 185 170 C170 182, 150 185, 132 178
+                 C110 185, 88 170, 82 150 C70 140, 68 118, 80 100Z"
+              fill="var(--surface-2)" stroke="rgba(46,139,74,0.35)" stroke-width="1.5"/>
+
+        <!-- Brain folds (sulci) -->
+        <path d="M110 70 C120 55, 140 50, 155 62" stroke="rgba(46,139,74,0.2)" stroke-width="1.2" fill="none"/>
+        <path d="M175 48 C188 42, 205 48, 210 62" stroke="rgba(46,139,74,0.2)" stroke-width="1.2" fill="none"/>
+        <path d="M230 55 C242 58, 250 70, 248 85" stroke="rgba(46,139,74,0.2)" stroke-width="1.2" fill="none"/>
+        <path d="M90 115 C98 105, 112 102, 120 110" stroke="rgba(46,139,74,0.2)" stroke-width="1.2" fill="none"/>
+        <path d="M255 100 C260 112, 258 128, 248 138" stroke="rgba(46,139,74,0.2)" stroke-width="1.2" fill="none"/>
+        <path d="M120 145 C130 138, 148 138, 158 148" stroke="rgba(46,139,74,0.2)" stroke-width="1.2" fill="none"/>
+        <path d="M165 100 C175 88, 195 85, 205 95" stroke="rgba(46,139,74,0.18)" stroke-width="1.2" fill="none"/>
+
+        <!-- Hippocampus highlight — pulsing region -->
+        <ellipse cx="155" cy="128" rx="28" ry="18" fill="rgba(230,62,17,0.15)" stroke="rgba(230,62,17,0.55)" stroke-width="1.5">
+          <animate attributeName="opacity" values="0.5;1;0.5" dur="2.2s" repeatCount="indefinite"/>
+        </ellipse>
+        <ellipse cx="155" cy="128" rx="28" ry="18" fill="none" stroke="rgba(230,62,17,0.25)" stroke-width="8">
+          <animate attributeName="r" values="18;26;18" dur="2.2s" repeatCount="indefinite"/>
+          <animate attributeName="opacity" values="0.5;0;0.5" dur="2.2s" repeatCount="indefinite"/>
+        </ellipse>
+
+        <!-- Hippocampus label line -->
+        <line x1="183" y1="122" x2="220" y2="105" stroke="rgba(230,62,17,0.4)" stroke-width="1" stroke-dasharray="3 2"/>
+        <text x="224" y="103" font-size="9" fill="rgba(230,62,17,0.7)" font-family="Space Mono, monospace">hippocampus</text>
+        <text x="224" y="114" font-size="7.5" fill="rgba(122,156,126,0.45)" font-family="DM Sans, sans-serif">impaired by sat. fats</text>
+
+        <!-- Left hemisphere divider -->
+        <path d="M160 40 C162 80, 163 120, 160 165" stroke="rgba(46,139,74,0.15)" stroke-width="1" fill="none"/>
+
+        <!-- Caption -->
+        <text x="160" y="194" font-size="8" fill="rgba(122,156,126,0.4)" font-family="DM Sans, sans-serif" text-anchor="middle">Pulsing region = active impairment site</text>
+      </svg>
+    </div>
+
+    <!-- Mood wave chart -->
+    <div class="mood-chart" id="moodWaveChart">
+      <div class="mood-chart-title">Energy &amp; Focus Over a School Day</div>
+      <div class="mood-chart-legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#e63e11;"></div>
+          <span>Junk food diet — spike &amp; crash</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background:#2e8b4a;"></div>
+          <span>Balanced diet — stable performance</span>
+        </div>
+      </div>
+      <svg viewBox="0 0 480 120" xmlns="http://www.w3.org/2000/svg" style="overflow:visible;">
+        <!-- Grid lines -->
+        <line x1="0" y1="20"  x2="480" y2="20"  stroke="rgba(46,139,74,0.08)" stroke-width="1"/>
+        <line x1="0" y1="50"  x2="480" y2="50"  stroke="rgba(46,139,74,0.08)" stroke-width="1"/>
+        <line x1="0" y1="80"  x2="480" y2="80"  stroke="rgba(46,139,74,0.08)" stroke-width="1"/>
+        <line x1="0" y1="110" x2="480" y2="110" stroke="rgba(46,139,74,0.1)"  stroke-width="1"/>
+
+        <!-- Time labels -->
+        <text x="0"   y="122" font-size="7.5" fill="rgba(122,156,126,0.45)" font-family="Space Mono, monospace">8am</text>
+        <text x="108" y="122" font-size="7.5" fill="rgba(122,156,126,0.45)" font-family="Space Mono, monospace">10am</text>
+        <text x="224" y="122" font-size="7.5" fill="rgba(122,156,126,0.45)" font-family="Space Mono, monospace">12pm</text>
+        <text x="338" y="122" font-size="7.5" fill="rgba(122,156,126,0.45)" font-family="Space Mono, monospace">2pm</text>
+        <text x="448" y="122" font-size="7.5" fill="rgba(122,156,126,0.45)" font-family="Space Mono, monospace">4pm</text>
+
+        <!-- Y axis labels -->
+        <text x="-28" y="22"  font-size="7" fill="rgba(122,156,126,0.35)" font-family="Space Mono, monospace">High</text>
+        <text x="-26" y="84"  font-size="7" fill="rgba(122,156,126,0.35)" font-family="Space Mono, monospace">Low</text>
+
+        <!-- Junk food path — spike then crash, repeating -->
+        <path id="junkWavePath"
+          d="M0,80 C20,75 35,68 60,25 C80,5 90,8 110,30 C128,52 130,95 160,105
+             C185,112 195,105 220,55 C238,22 248,18 265,45 C280,68 285,105 310,108
+             C330,110 345,105 370,60 C388,28 395,22 415,48 C430,68 440,100 480,106"
+          stroke="#e63e11" stroke-width="2.5" fill="none"
+          stroke-linecap="round" stroke-linejoin="round"/>
+
+        <!-- Healthy diet path — gently undulating -->
+        <path id="healthyWavePath"
+          d="M0,55 C30,50 60,45 90,48 C120,51 150,54 180,50 C210,46 240,44 270,47
+             C300,50 330,52 360,49 C390,46 420,47 480,50"
+          stroke="#2e8b4a" stroke-width="2.5" fill="none"
+          stroke-linecap="round" stroke-linejoin="round"/>
+
+        <!-- Crash annotation -->
+        <line x1="155" y1="60" x2="155" y2="102" stroke="rgba(230,62,17,0.3)" stroke-width="1" stroke-dasharray="3 2"/>
+        <text x="158" y="72" font-size="7" fill="rgba(230,62,17,0.5)" font-family="DM Sans, sans-serif">crash</text>
+      </svg>
+    </div>
+
+    <h3 class="reveal">Academic Impacts</h3>
+    <p class="reveal">Diets high in saturated fats impair the <strong>hippocampus</strong> — the brain structure most critical for memory consolidation and spatial reasoning. Students often report "brain fog" after high-sugar lunches, which corresponds to measurable drops in afternoon alertness.</p>
+
+    <ul class="reveal-group">
+      <li><strong>Concentration:</strong> Sugar crashes 60–90 minutes after a high-glycaemic meal create the classic post-lunch slump, tanking focus precisely when afternoon classes begin.</li>
+      <li><strong>Working memory:</strong> Chronic omega-3 deficiency — common in junk-food-heavy diets — is linked to reduced prefrontal cortex activation during memory tasks.</li>
+      <li><strong>Exam performance:</strong> Students who ate a nutritious breakfast before standardised tests consistently outperformed those who ate high-sugar foods.</li>
+    </ul>
+
+    <h3 class="reveal">Mental Health Links</h3>
+    <ul class="reveal-group">
+      <li><strong>Anxiety:</strong> Caffeine from energy drinks and adenosine disruption from high sugar can mimic and exacerbate anxiety, raising resting cortisol levels in adolescents.</li>
+      <li><strong>Depression:</strong> Long-term poor nutrition depletes serotonin precursors, elevates inflammatory cytokines, and is linked to a 25–35% increased depression risk in teenagers.</li>
+      <li><strong>Mood dysregulation:</strong> Blood-glucose volatility creates emotional volatility — the sugar-crash "irritability window" is measurable in classroom behaviour data.</li>
+    </ul>
+
+    <h3 class="reveal">The Gut–Brain Axis</h3>
+    <p class="reveal">The gut microbiome — decimated by ultra-processed diets — produces 90% of the body's serotonin and communicates bidirectionally with the brain. A junk-food diet doesn't just starve a student of nutrients; it actively degrades the biological infrastructure for emotional stability and cognitive performance.</p>
+  </main>
+
+  <footer>
+    <p>&copy; 2026 Student Health Initiative &nbsp;·&nbsp; Built for education, not profit</p>
+  </footer>
+
+  <script src="js/nav-upgrade.js"></script>
+  <script src="js/tilt.js"></script>
+  <script src="js/scroll-anim.js"></script>
 </body>
 </html>
