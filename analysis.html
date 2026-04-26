@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NutriMatch - Pro Analysis</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+<div class="container">
+    <header><h1>NutriMatch 🍏</h1></header>
+    
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="health.html">Physical Health</a>
+        <a href="wellbeing.html">Mental & Academics</a>
+        <a href="global.html">Global Context</a>
+        <a href="solutions.html">Solutions</a>
+        <a href="analysis.html">NutriMatch</a> 
+    </nav>
+
+    <div class="api-section" style="background: #fdfdfd; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px dashed #ccc;">
+        <label for="apiKeyInput" style="font-weight:bold; color: #7f8c8d;">Custom API Key (Optional):</label>
+        <input type="password" id="apiKeyInput" placeholder="Using default key..." style="width: 40%; padding: 8px; margin-left: 10px; border: 1px solid #ddd; border-radius: 4px;">
+        <span style="font-size: 0.8em; color: #95a5a6; margin-left: 10px;">Leave blank to use the site's default key.</span>
+    </div>
+
+    <div class="input-group">
+        <div class="tabs" style="margin-bottom: 15px;">
+            <button id="lookupTab" class="active" onclick="setMode('lookup')" style="padding: 10px 20px; cursor: pointer; border: none; border-radius: 4px 0 0 4px;">Single Lookup</button>
+            <button id="compareTab" onclick="setMode('compare')" style="padding: 10px 20px; cursor: pointer; border: none; border-radius: 0 4px 4px 0;">Comparison Battle</button>
+        </div>
+
+        <div id="lookupInputs">
+            <input type="text" id="foodInput" placeholder="e.g., Greek Yogurt" style="width: 70%; padding: 10px;">
+            <button onclick="fetchData('lookup')" class="search-btn" style="padding: 10px 20px; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer;">Analyze</button>
+        </div>
+        <div id="compareInputs" style="display:none;">
+            <input type="text" id="food1" placeholder="First food..." style="width: 38%; padding: 10px;">
+            <input type="text" id="food2" placeholder="Second food..." style="width: 38%; padding: 10px;">
+            <button onclick="fetchData('compare')" class="search-btn" style="padding: 10px 20px; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer;">Compare</button>
+        </div>
+    </div>
+
+    <div id="results" style="margin-top: 20px;"></div>
+</div>
+
+<script>
+    // --- SET YOUR DEFAULT KEY HERE ---
+    const DEFAULT_API_KEY = 'H2dwHXTd5FMTogy15biz2WhDU88CAEhG4QRAovEX'; 
+    
+    let currentMode = 'lookup';
+
+    function setMode(mode) {
+        currentMode = mode;
+        document.getElementById('lookupTab').style.backgroundColor = mode === 'lookup' ? '#2c3e50' : '#ecf0f1';
+        document.getElementById('lookupTab').style.color = mode === 'lookup' ? '#fff' : '#333';
+        document.getElementById('compareTab').style.backgroundColor = mode === 'compare' ? '#2c3e50' : '#ecf0f1';
+        document.getElementById('compareTab').style.color = mode === 'compare' ? '#fff' : '#333';
+        
+        document.getElementById('lookupInputs').style.display = mode === 'lookup' ? 'block' : 'none';
+        document.getElementById('compareInputs').style.display = mode === 'compare' ? 'block' : 'none';
+        document.getElementById('results').innerHTML = '';
+    }
+
+    async function searchFood(query, apiKey) {
+        if(!query) return null;
+        try {
+            const response = await fetch(`https://api.nal.usda.gov/fdc/v1/foods/search?api_key=${apiKey}&query=${encodeURIComponent(query)}&pageSize=1&dataType=Branded,Foundation`);
+            if (response.status === 403) throw new Error("Invalid API Key");
+            const data = await response.json();
+            return data.foods && data.foods.length > 0 ? data.foods[0] : null;
+        } catch (e) {
+            console.error("API Error", e);
+            return null;
+        }
+    }
+
+    function calculateNutriScore(food) {
+        if (!food || !food.foodNutrients) return null;
+        let nutrients = {};
+        food.foodNutrients.forEach(n => { nutrients[n.nutrientId] = n.value; });
+
+        const kcal = nutrients[208] || nutrients[1008] || 0;
+        const energyKj = kcal * 4.184; 
+        const satFat = nutrients[606] || nutrients[1258] || 0; 
+        const sugar = nutrients[269] || nutrients[2000] || 0;
+        const sodiumMg = nutrients[307] || nutrients[1093] || 0;
+        const salt = (sodiumMg / 1000) * 2.5; 
+        const fiber = nutrients[291] || nutrients[1079] || 0;
+        const protein = nutrients[203] || nutrients[1003] || 0;
+
+        const nPoints = Math.min(10, Math.floor(energyKj / 335)) + Math.min(10, Math.floor(satFat / 1)) + Math.min(10, Math.floor(sugar / 4.5)) + Math.min(10, Math.floor(salt / 0.09)); 
+        const pFiber = Math.min(5, Math.floor(fiber / 0.7));
+        const pProtein = Math.min(5, Math.floor(protein / 1.6));
+        
+        let totalScore = nPoints - pFiber;
+        if (nPoints < 11) totalScore -= pProtein;
+
+        let grade, color;
+        if (totalScore <= -1) { grade = 'A'; color = '#038141'; }
+        else if (totalScore <= 2) { grade = 'B'; color = '#85bb2f'; }
+        else if (totalScore <= 10) { grade = 'C'; color = '#fecb02'; }
+        else if (totalScore <= 18) { grade = 'D'; color = '#ee8100'; }
+        else { grade = 'E'; color = '#e63e11'; }
+
+        return { grade, color, totalScore, stats: { energyKj, satFat, sugar, salt, fiber, protein } };
+    }
+
+    function createCard(food, score, isWinner = false) {
+        if (!food || !score) return `<div class="food-card" style="padding: 15px; border: 1px solid #ffcccc; background: #fff0f0; border-radius: 8px;">Product not found or incomplete data.</div>`;
+        const letters = ['A', 'B', 'C', 'D', 'E'];
+        const badgeHtml = `<div class="ns-badge" style="display: flex; margin: 10px 0; border-radius: 5px; overflow: hidden; width: fit-content; border: 1px solid #ddd;">
+            ${letters.map(l => `<span style="padding: 5px 10px; font-weight: bold; color: white; background-color: ${score.grade === l ? score.color : '#ccc'};">${l}</span>`).join('')}
+        </div>`;
+
+        return `
+            <div class="food-card" style="border: ${isWinner ? '2px solid #f1c40f' : '1fr solid #ddd'}; padding: 15px; margin: 10px; border-radius: 8px; background: white; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                ${isWinner ? '<div style="position: absolute; top: -12px; right: 10px; background: #f1c40f; color: #fff; padding: 2px 10px; border-radius: 10px; font-size: 0.8em; font-weight: bold;">WINNER</div>' : ''}
+                <h3 style="margin: 0; font-size: 1.1em;">${food.description}</h3>
+                <p style="margin: 5px 0; color: #95a5a6;"><small>${food.brandOwner || 'Standard Entry'}</small></p>
+                ${badgeHtml}
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 5px; font-size: 0.85em; color: #555;">
+                    <div>Energy: ${Math.round(score.stats.energyKj)} kJ</div>
+                    <div>Sat Fat: ${score.stats.satFat.toFixed(1)}g</div>
+                    <div>Sugar: ${score.stats.sugar.toFixed(1)}g</div>
+                    <div>Salt: ${score.stats.salt.toFixed(2)}g</div>
+                    <div>Fiber: ${score.stats.fiber.toFixed(1)}g</div>
+                    <div>Protein: ${score.stats.protein.toFixed(1)}g</div>
+                </div>
+            </div>`;
+    }
+
+    async function fetchData(mode) {
+        // Logic: Use input key IF present, otherwise use DEFAULT_API_KEY
+        const userKey = document.getElementById('apiKeyInput').value.trim();
+        const activeKey = userKey || DEFAULT_API_KEY;
+
+        const resultsDiv = document.getElementById('results');
+        resultsDiv.innerHTML = "<div style='text-align:center;'>🔍 Searching...</div>";
+
+        if (mode === 'lookup') {
+            const query = document.getElementById('foodInput').value;
+            const food = await searchFood(query, activeKey);
+            const score = calculateNutriScore(food);
+            resultsDiv.style.display = "block";
+            resultsDiv.innerHTML = createCard(food, score);
+        } else {
+            const [f1, f2] = await Promise.all([
+                searchFood(document.getElementById('food1').value, activeKey),
+                searchFood(document.getElementById('food2').value, activeKey)
+            ]);
+            const s1 = calculateNutriScore(f1);
+            const s2 = calculateNutriScore(f2);
+            resultsDiv.style.display = "grid";
+            resultsDiv.style.gridTemplateColumns = "1fr 1fr";
+            resultsDiv.innerHTML = createCard(f1, s1, (s1 && s2 && s1.totalScore < s2.totalScore)) + 
+                                   createCard(f2, s2, (s1 && s2 && s2.totalScore < s1.totalScore));
+        }
+    }
+    
+    // Initialize tab colors
+    setMode('lookup');
+</script>
+</body>
+</html>
