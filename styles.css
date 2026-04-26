@@ -3,13 +3,13 @@
     --primary: #2e7d32;       /* Forest Green */
     --primary-dark: #1b5e20;
     --secondary: #e8f5e9;     /* Light Mint */
-    --accent: #fb8c00;        /* Warning/Health Orange */
+    --accent: #fb8c00;        
     --bg: #f5f5f5;
     --card: #ffffff;
     --text: #333333;
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-
+ 
 * {
     box-sizing: border-box;
 }
